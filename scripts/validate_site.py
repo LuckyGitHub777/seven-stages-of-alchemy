@@ -81,7 +81,8 @@ def main():
     check(not re.search(r"@import|url\(\s*['\"]?https?:", html), "no remote CSS imports")
     check("fetch(" not in html and "XMLHttpRequest" not in html, "no network calls in script")
 
-    check("prefers-reduced-motion" in html, "reduced-motion media query present")\n    check("Symbolic and reflective" in html, "scope notice present")
+    check("prefers-reduced-motion" in html, "reduced-motion media query present")
+    check("Symbolic and reflective" in html, "scope notice present")
     check("focus-visible" in html, "visible focus styling present")
 
     lowered = html.lower()
