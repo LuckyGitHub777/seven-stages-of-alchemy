@@ -1,8 +1,5 @@
 name: pages
 
-# Every push to main: run all checks, deploy only the public site files to
-# GitHub Pages, then verify the live URL serves exactly this commit and passes
-# the full browser UAT. A weekly run re-verifies the live site.
 
 on:
   push:
@@ -57,22 +54,18 @@ jobs:
     outputs:
       page_url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      # actions/checkout v4.4.0, pinned to an immutable commit
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
-      # actions/configure-pages v6.0.0, pinned to an immutable commit
       - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d
       - name: Assemble public site (only the files visitors need)
         run: |
           mkdir _site
           cp index.html social-preview.png _site/
           ls -la _site
-      # actions/upload-pages-artifact v5.0.0, pinned to an immutable commit
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9
         with:
           path: _site
-      # actions/deploy-pages v5.0.1, pinned to an immutable commit
       - id: deployment
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346
 
@@ -83,11 +76,9 @@ jobs:
     env:
       SITE: ${{ needs.deploy.outputs.page_url }}
     steps:
-      # actions/checkout v4.4.0, pinned to an immutable commit
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
-      # actions/setup-node v4.4.0, pinned to an immutable commit
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: "22"
@@ -106,7 +97,7 @@ jobs:
           curl -fsSI "${SITE}" | grep -i '^content-type: text/html'
       - name: Only public files are served
         run: |
-          for f in README.md NOTICE.md package.json scripts/validate_site.py tests/uat.cjs SHA256SUMS.txt; do
+          for f in README.md SECURITY.md LICENSE package.json scripts/validate_site.py tests/uat.cjs SHA256SUMS.txt; do
             code=$(curl -s -o /dev/null -w '%{http_code}' "${SITE}${f}")
             echo "$f -> $code"; [ "$code" = "404" ]
           done
