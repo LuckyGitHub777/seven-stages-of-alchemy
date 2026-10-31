@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.0.4
+
+- Added an automated Pages pipeline: checks → deploy (public files only) → live verification (byte match, 404 for repository-only files, full browser UAT on the live URL) → weekly re-verification.
+- Every workflow `uses:` reference is now validated as pinned to a full commit SHA.
+- README: "Local by design", plus a deployment section and the live link.
+
 ## v1.0.3
 
 - Simplified the About panel and `NOTICE.md`.

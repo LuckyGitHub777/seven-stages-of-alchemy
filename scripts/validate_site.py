@@ -113,6 +113,17 @@ def main():
     notice = (ROOT / "NOTICE.md").read_text(encoding="utf-8") if (ROOT / "NOTICE.md").is_file() else ""
     check("not affiliated" in notice, "NOTICE.md carries independence notice")
 
+    # Every workflow action must be pinned to a full commit SHA
+    wf_dir = ROOT / ".github" / "workflows"
+    unpinned = []
+    for wf in sorted(wf_dir.glob("*.yml")):
+        for line in wf.read_text(encoding="utf-8").splitlines():
+            m2 = re.match(r"\s*-?\s*uses:\s*(\S+)", line)
+            if m2 and not m2.group(1).startswith("./") and not re.search(r"@[0-9a-f]{40}$", m2.group(1)):
+                unpinned.append(f"{wf.name}: {m2.group(1)}")
+    check(not unpinned, f"all workflow actions pinned to commit SHAs {unpinned if unpinned else ''}".strip())
+    check((wf_dir / "pages.yml").is_file(), "Pages deploy + live-verify pipeline present")
+
     print()
     if failures:
         print(f"RESULT: FAIL ({len(failures)} check(s) failed)")

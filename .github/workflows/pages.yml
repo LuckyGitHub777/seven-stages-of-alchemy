@@ -1,0 +1,119 @@
+name: pages
+
+# Every push to main: run all checks, deploy only the public site files to
+# GitHub Pages, then verify the live URL serves exactly this commit and passes
+# the full browser UAT. A weekly run re-verifies the live site.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: "41 7 * * 1"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  checks:
+    uses: ./.github/workflows/validate.yml
+
+  pages-status:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    permissions:
+      pages: read
+    outputs:
+      ready: ${{ steps.s.outputs.ready }}
+    steps:
+      - id: s
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          bt=$(gh api "repos/${GITHUB_REPOSITORY}/pages" --jq .build_type 2>/dev/null || echo none)
+          echo "Pages build_type: ${bt}"
+          if [ "$bt" = "workflow" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::warning title=Pages not enabled::Set Settings → Pages → Source to 'GitHub Actions', then re-run this workflow. Deploy and live checks were skipped."
+          fi
+
+  deploy:
+    needs: [checks, pages-status]
+    if: needs.pages-status.outputs.ready == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      # actions/checkout v4.4.0, pinned to an immutable commit
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      # actions/configure-pages v6.0.0, pinned to an immutable commit
+      - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d
+      - name: Assemble public site (only the files visitors need)
+        run: |
+          mkdir _site
+          cp index.html social-preview.png _site/
+          ls -la _site
+      # actions/upload-pages-artifact v5.0.0, pinned to an immutable commit
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9
+        with:
+          path: _site
+      # actions/deploy-pages v5.0.1, pinned to an immutable commit
+      - id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346
+
+  live-verify:
+    needs: deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SITE: ${{ needs.deploy.outputs.page_url }}
+    steps:
+      # actions/checkout v4.4.0, pinned to an immutable commit
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      # actions/setup-node v4.4.0, pinned to an immutable commit
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "22"
+      - name: Live files match this commit byte-for-byte
+        run: |
+          set -e
+          echo "Live URL: ${SITE}"
+          for f in index.html social-preview.png; do
+            want=$(sha256sum "$f" | cut -d' ' -f1); got=""
+            for i in $(seq 1 30); do
+              got=$(curl -fsSL -H 'Cache-Control: no-cache' "${SITE}${f}?v=${GITHUB_SHA}" | sha256sum | cut -d' ' -f1) || true
+              [ "$got" = "$want" ] && break; sleep 10
+            done
+            echo "$f commit=$want live=$got"; [ "$got" = "$want" ]
+          done
+          curl -fsSI "${SITE}" | grep -i '^content-type: text/html'
+      - name: Only public files are served
+        run: |
+          for f in README.md NOTICE.md package.json scripts/validate_site.py tests/uat.cjs SHA256SUMS.txt; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "${SITE}${f}")
+            echo "$f -> $code"; [ "$code" = "404" ]
+          done
+      - name: Install pinned Playwright
+        run: npm ci --no-audit --no-fund && npx playwright install --with-deps chromium
+      - name: Full browser UAT against the live site
+        env:
+          SITE_URL: ${{ needs.deploy.outputs.page_url }}
+          SHOT_DIR: ${{ runner.temp }}/live-shots
+        run: npm run uat
