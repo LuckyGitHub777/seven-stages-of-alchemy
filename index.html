@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="A seven-stage alchemical transformation experience: Calcination, Dissolution, Separation, Conjunction, Fermentation, Distillation, Coagulation.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data: blob:; media-src blob:; base-uri 'none'; form-action 'none'">
+<title>Seven Stages of Alchemy</title>
+<style>
+:root{
+  --bg:#0c0a09; --ink:#efe6d8; --muted:#a89c8a; --faint:#3a322b;
+  --accent:#d9a441; --accent-ink:#1a1206;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --r:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font:17px/1.6 var(--sans);
+  background-image:radial-gradient(ellipse 80% 60% at 50% 0%,color-mix(in srgb,var(--accent) 14%,transparent),transparent 70%);
+  background-repeat:no-repeat;background-attachment:fixed;min-height:100dvh;display:flex;flex-direction:column}
+a{color:var(--accent)}
+button,textarea,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:6px}
+.skip{position:absolute;left:-999px;top:0}
+.skip:focus{left:12px;top:12px;background:var(--accent);color:var(--accent-ink);padding:8px 12px;z-index:9}
+
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px clamp(14px,4vw,32px)}
+.brand{font-family:var(--serif);letter-spacing:.14em;text-transform:uppercase;font-size:13px;color:var(--muted)}
+.tools{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.chip{background:transparent;border:1px solid var(--faint);border-radius:999px;padding:6px 12px;font-size:13px;color:var(--muted);cursor:pointer}
+.chip[aria-pressed="true"]{border-color:var(--accent);color:var(--ink)}
+
+nav.rail{display:flex;justify-content:center;gap:clamp(6px,2vw,14px);padding:4px 12px 0}
+.dot{width:34px;height:34px;border-radius:50%;border:1px solid var(--faint);background:transparent;color:var(--muted);
+  font:600 12px/1 var(--sans);cursor:pointer;display:grid;place-items:center}
+.dot[disabled]{opacity:.35;cursor:not-allowed}
+.dot.done{border-color:color-mix(in srgb,var(--accent) 60%,var(--faint));color:var(--ink)}
+.dot[aria-current="step"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+
+main{flex:1;width:100%;max-width:760px;margin:0 auto;padding:12px clamp(16px,5vw,32px) 48px}
+.sigil{display:block;width:min(220px,52vw);height:auto;margin:10px auto 4px;color:var(--accent);overflow:visible}
+.sigil .spin{transform-origin:100px 100px;animation:spin 60s linear infinite}
+.sigil .breathe{transform-origin:100px 100px;animation:breathe 8s ease-in-out infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes breathe{50%{transform:scale(1.04);opacity:.85}}
+.eyebrow{text-align:center;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin:6px 0 0}
+h1,h2{font-family:var(--serif);font-weight:500;text-align:center;line-height:1.15;margin:.2em 0 .35em}
+h1{font-size:clamp(34px,8vw,56px)}
+h2{font-size:clamp(30px,7vw,46px)}
+.lede{text-align:center;color:var(--muted);max-width:56ch;margin:0 auto 22px;font-family:var(--serif);font-size:1.12em}
+.prompt{font-family:var(--serif);font-size:1.15em;margin:18px 0 8px}
+label.prompt{display:block}
+textarea{width:100%;min-height:120px;resize:vertical;background:color-mix(in srgb,var(--ink) 4%,transparent);
+  border:1px solid var(--faint);border-radius:var(--r);padding:14px;line-height:1.55}
+textarea:focus{border-color:var(--accent)}
+.hint{font-size:13px;color:var(--muted);margin:6px 2px 0}
+.actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:22px 0 4px}
+.btn{border:1px solid var(--faint);background:transparent;border-radius:999px;padding:11px 20px;cursor:pointer;min-height:44px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.layers{display:flex;gap:8px;justify-content:center;margin:18px 0 0}
+.layer{border:1px solid var(--faint);border-radius:var(--r);padding:14px 16px;margin-top:12px;background:color-mix(in srgb,var(--ink) 3%,transparent)}
+.layer h3{margin:0 0 6px;font:600 12px/1.3 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
+.layer p{margin:.3em 0}
+dl.corr{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin:6px 0 0}
+dl.corr dt{color:var(--muted)} dl.corr dd{margin:0;text-transform:capitalize}
+.carry{border-left:2px solid var(--accent);padding:4px 0 4px 14px;margin:14px 0;color:var(--muted);font-family:var(--serif);white-space:pre-wrap;word-break:break-word}
+.carry b{display:block;font:600 11px/1.3 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.cycle{text-align:center;color:var(--accent);font-size:13px;letter-spacing:.14em;text-transform:uppercase}
+.vessel{display:grid;gap:12px;margin-top:10px}
+.vessel .carry{color:var(--ink)}
+.field{display:grid;gap:6px;margin-top:12px}
+.field input{background:color-mix(in srgb,var(--ink) 4%,transparent);border:1px solid var(--faint);border-radius:10px;padding:10px 12px;min-height:44px}
+.note{font-size:13px;color:var(--muted);text-align:center;max-width:60ch;margin:26px auto 0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+footer{padding:16px;text-align:center;font-size:12px;color:var(--muted)}
+.fade{animation:fade .6s ease both}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+@media (max-width:380px){ .dot{width:30px;height:30px;font-size:11px} .brand{font-size:11px} }
+</style>
+</head>
+<body>
+<a class="skip" href="#stage">Skip to the current stage</a>
+<header>
+  <div class="brand">Seven Stages</div>
+  <div class="tools">
+    <button class="chip" id="soundBtn" type="button" aria-pressed="false">Sound: off</button>
+    <button class="chip" id="resetBtn" type="button">Begin again</button>
+  </div>
+</header>
+<nav class="rail" id="rail" aria-label="Stages"></nav>
+<main id="stage" tabindex="-1" aria-live="polite"></main>
+<footer>Symbolic and reflective. Not medical or psychological treatment. Nothing you write leaves this device.</footer>
+
+<script type="application/json" id="stages">
+[
+ {"id":"calcination","n":1,"name":"Calcination","verb":"Burn away","color":"#c8553d",
+  "geometry":"triangle","element":"Fire","planet":"Saturn","metal":"Lead",
+  "lede":"Put what you carry into the fire. What survives the heat is what is real.",
+  "prompt":"What are you ready to let burn? Name the pride, habit, or story that is no longer serving the work.",
+  "reality":"In practice: list what you keep defending that you no longer believe. Calcination is honest subtraction, not self-punishment.",
+  "structure":"The upward triangle is fire. Lead is the heaviest, slowest metal; the work begins with what weighs most."},
+ {"id":"dissolution","n":2,"name":"Dissolution","verb":"Let it soften","color":"#3d7ec8",
+  "geometry":"circle","element":"Water","planet":"Jupiter","metal":"Tin",
+  "lede":"The ash goes into water. Rigid forms loosen so something new can move through them.",
+  "prompt":"What feeling or truth have you been holding at arm's length? Let it in for a moment and describe it.",
+  "reality":"In practice: write without editing for two minutes. Dissolution is letting go of control over how it should sound.",
+  "structure":"The circle is water: no corners, no resistance. Tin is the metal that bends and sings when flexed."},
+ {"id":"separation","n":3,"name":"Separation","verb":"Sort and keep","color":"#8fb3a8",
+  "geometry":"split","element":"Air","planet":"Mars","metal":"Iron",
+  "lede":"With the solution clear, divide what is essential from what is residue.",
+  "prompt":"Looking at what surfaced, what is worth keeping, and what can be set down?",
+  "reality":"In practice: make two short lists, Keep and Release. Be specific. Separation needs a decision, not a mood.",
+  "structure":"Two circles drawn apart are air and discernment. Iron is the blade that makes the cut."},
+ {"id":"conjunction","n":4,"name":"Conjunction","verb":"Unite","color":"#b07ad1",
+  "geometry":"vesica","element":"Earth","planet":"Venus","metal":"Copper",
+  "lede":"What you kept is joined. Opposites meet, and a new middle ground appears.",
+  "prompt":"Which two things you kept seemed opposed? What becomes possible if they work together?",
+  "reality":"In practice: write one sentence that holds both. 'I am X and Y,' or 'I can do X by way of Y.'",
+  "structure":"Overlapping circles form the vesica, the shared space between two wholes. Copper carries current and joins things."},
+ {"id":"fermentation","n":5,"name":"Fermentation","verb":"Bring to life","color":"#7fa63d",
+  "geometry":"pentagon","element":"Life","planet":"Mercury","metal":"Quicksilver",
+  "lede":"The union rots, then quickens. Something living rises out of the decay.",
+  "prompt":"What new energy, idea, or impulse is stirring in what you've joined? Describe it as if it were alive.",
+  "reality":"In practice: notice what you feel drawn toward now, even if it is small or inconvenient. That pull is the ferment.",
+  "structure":"The pentagon is the geometry of living growth. Quicksilver moves and will not be held still."},
+ {"id":"distillation","n":6,"name":"Distillation","verb":"Refine, and refine again","color":"#c9d1dc",
+  "geometry":"spiral","element":"Spirit","planet":"Moon","metal":"Silver","recursive":true,
+  "lede":"Boil it, condense it, return it to the vessel. Each pass leaves less, and what is left is clearer.",
+  "prompt":"Say what matters most in fewer words than before.",
+  "reality":"In practice: rewrite your insight more briefly each time. Stop when another pass would remove something true.",
+  "structure":"The spiral returns to the same point on a higher turn. Silver reflects cleanly; distillation is repeated until it does."},
+ {"id":"coagulation","n":7,"name":"Coagulation","verb":"Make it real","color":"#e0b54a",
+  "geometry":"heptagram","element":"The Stone","planet":"Sun","metal":"Gold",
+  "lede":"The refined essence takes solid form. Spirit becomes something you can hold and act on.",
+  "prompt":"What is one concrete thing you will do, make, or say because of this? Be specific enough that you'll know when it's done.",
+  "reality":"In practice: a real action has a verb, an object, and a time. 'Call my brother Sunday' instead of 'reconnect more'.",
+  "structure":"The seven-pointed star gathers all seven stages into one figure. Gold does not tarnish; the work is meant to last."}
+]
+</script>
+
+<script>
+(function(){
+'use strict';
+var STAGES = JSON.parse(document.getElementById('stages').textContent);
+var KEY = 'seven-stages.v1';
+var main = document.getElementById('stage');
+var rail = document.getElementById('rail');
+var soundBtn = document.getElementById('soundBtn');
+
+function blank(){ return {view:'intro', matter:'', answers:{}, distillates:[], apply:{when:'',first:''}, layers:{}}; }
+function load(){
+  try{ var s = JSON.parse(localStorage.getItem(KEY)); if(s && s.view) return Object.assign(blank(), s); }catch(e){}
+  return blank();
+}
+var state = load();
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+
+function el(tag, attrs, kids){
+  var n = document.createElement(tag);
+  if(attrs) for(var k in attrs){
+    if(k === 'text') n.textContent = attrs[k];
+    else if(k === 'on') for(var ev in attrs.on) n.addEventListener(ev, attrs.on[ev]);
+    else if(attrs[k] !== false && attrs[k] != null) n.setAttribute(k, attrs[k] === true ? '' : attrs[k]);
+  }
+  (kids||[]).forEach(function(c){ if(c) n.appendChild(typeof c === 'string' ? document.createTextNode(c) : c); });
+  return n;
+}
+
+/* ---------- sacred geometry (inline SVG, no external assets) ---------- */
+var NS = 'http://www.w3.org/2000/svg';
+function svg(tag, a){ var n = document.createElementNS(NS, tag); for(var k in a) n.setAttribute(k, a[k]); return n; }
+function poly(nPts, r, rot, step){
+  var pts = [], s = step || 1;
+  for(var i=0;i<nPts;i++){ var t = (i*s/nPts)*2*Math.PI + (rot||-Math.PI/2); pts.push((100+r*Math.cos(t)).toFixed(2)+','+(100+r*Math.sin(t)).toFixed(2)); }
+  return pts.join(' ');
+}
+function sigil(kind){
+  var root = svg('svg',{viewBox:'0 0 200 200','class':'sigil','aria-hidden':'true',focusable:'false'});
+  var g = svg('g',{fill:'none',stroke:'currentColor','stroke-width':'1.2','stroke-linejoin':'round'});
+  var outer = svg('circle',{cx:100,cy:100,r:92,fill:'none',stroke:'currentColor','stroke-opacity':'.35','stroke-dasharray':'2 6','class':'spin'});
+  root.appendChild(outer);
+  var b = svg('g',{'class':'breathe'});
+  switch(kind){
+    case 'triangle': b.appendChild(svg('polygon',{points:poly(3,70)})); b.appendChild(svg('polygon',{points:poly(3,40),'stroke-opacity':'.5'})); break;
+    case 'circle': [70,52,34,16].forEach(function(r,i){ b.appendChild(svg('circle',{cx:100,cy:100+(70-r)*.35,r:r,'stroke-opacity':String(1-i*.2)})); }); break;
+    case 'split': b.appendChild(svg('circle',{cx:70,cy:100,r:38})); b.appendChild(svg('circle',{cx:130,cy:100,r:38})); b.appendChild(svg('line',{x1:100,y1:30,x2:100,y2:170,'stroke-opacity':'.5'})); break;
+    case 'vesica': b.appendChild(svg('circle',{cx:80,cy:100,r:50})); b.appendChild(svg('circle',{cx:120,cy:100,r:50})); b.appendChild(svg('circle',{cx:100,cy:100,r:10,fill:'currentColor','fill-opacity':'.25'})); break;
+    case 'pentagon': b.appendChild(svg('polygon',{points:poly(5,70)})); b.appendChild(svg('polygon',{points:poly(5,70,null,2),'stroke-opacity':'.55'})); break;
+    case 'spiral':
+      var d='M100 100', a=0, r=1; for(var i=0;i<220;i++){ a+=0.12; r*=1.018; d+=' L'+(100+r*Math.cos(a)).toFixed(2)+' '+(100+r*Math.sin(a)).toFixed(2); }
+      b.appendChild(svg('path',{d:d})); break;
+    case 'heptagram': b.appendChild(svg('polygon',{points:poly(7,72)})); b.appendChild(svg('polygon',{points:poly(7,72,null,3),'stroke-opacity':'.7'})); b.appendChild(svg('circle',{cx:100,cy:100,r:6,fill:'currentColor'})); break;
+    default: b.appendChild(svg('polygon',{points:poly(7,72,null,2)})); b.appendChild(svg('circle',{cx:100,cy:100,r:30,'stroke-opacity':'.5'}));
+  }
+  g.appendChild(b); root.appendChild(g);
+  return root;
+}
+
+/* ---------- optional sound: opt-in, user-gesture only, never autoplays ---------- */
+var audio = {ctx:null, nodes:null, on:false};
+var RATIOS = [1, 9/8, 5/4, 4/3, 3/2, 5/3, 15/8];
+function tone(idx){
+  if(!audio.on || !audio.ctx) return;
+  var c = audio.ctx, t = c.currentTime;
+  if(audio.nodes){ var old = audio.nodes; old.g.gain.cancelScheduledValues(t); old.g.gain.setTargetAtTime(0, t, .6); setTimeout(function(){ old.o.forEach(function(o){ try{o.stop();}catch(e){} }); }, 3000); }
+  if(idx < 0) { audio.nodes = null; return; }
+  var f = 110 * RATIOS[idx % 7];
+  var g = c.createGain(); g.gain.value = 0; g.connect(c.destination);
+  var lp = c.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=900; lp.connect(g);
+  var o = [f, f*1.5, f*2.003].map(function(fr, i){ var osc = c.createOscillator(); osc.type = i ? 'sine':'triangle'; osc.frequency.value = fr; var og = c.createGain(); og.gain.value = [0.5,0.25,0.12][i]; osc.connect(og); og.connect(lp); osc.start(); return osc; });
+  g.gain.setTargetAtTime(0.06, t, 1.2);
+  audio.nodes = {g:g, o:o};
+}
+soundBtn.addEventListener('click', function(){
+  audio.on = !audio.on;
+  if(audio.on){
+    try{ audio.ctx = audio.ctx || new (window.AudioContext || window.webkitAudioContext)(); audio.ctx.resume(); }catch(e){ audio.on = false; }
+  }
+  soundBtn.setAttribute('aria-pressed', String(audio.on));
+  soundBtn.textContent = 'Sound: ' + (audio.on ? 'on' : 'off');
+  if(audio.on) tone(currentIndex()); else tone(-1);
+});
+
+/* ---------- navigation ---------- */
+function currentIndex(){ for(var i=0;i<STAGES.length;i++) if(STAGES[i].id === state.view) return i; return state.view === 'apply' ? 6 : -1; }
+function reached(i){ // a stage is reachable if all prior stages have answers
+  for(var j=0;j<i;j++) if(!state.answers[STAGES[j].id]) return false;
+  return !!state.matter;
+}
+function go(view){
+  state.view = view; save(); render();
+  main.focus({preventScroll:true}); window.scrollTo({top:0, behavior:'auto'});
+  tone(currentIndex());
+}
+function theme(color){ document.documentElement.style.setProperty('--accent', color || '#d9a441'); }
+
+function renderRail(){
+  rail.textContent = '';
+  var ci = currentIndex();
+  STAGES.forEach(function(s, i){
+    var ok = reached(i);
+    rail.appendChild(el('button', {type:'button','class':'dot'+(state.answers[s.id]?' done':''), 'aria-label':s.n+'. '+s.name+(ok?'':' (locked)'),
+      'aria-current': (ci===i && state.view!=='apply') ? 'step' : false, disabled: !ok, title:s.name, text:String(s.n),
+      on:{click:function(){ go(s.id); }}}));
+  });
+}
+
+function layerToggles(s){
+  var wrap = el('div');
+  var row = el('div',{'class':'layers'});
+  var open = state.layers[s.id] || {};
+  [['reality','Reality'],['structure','Structure']].forEach(function(p){
+    var id = 'layer-'+p[0];
+    var btn = el('button',{type:'button','class':'chip','aria-expanded':String(!!open[p[0]]),'aria-controls':id,'data-layer':p[0],text:(open[p[0]]?'Hide ':'Show ')+p[1],
+      on:{click:function(){ var o = state.layers[s.id] = state.layers[s.id] || {}; o[p[0]] = !o[p[0]]; save(); render(); }}});
+    row.appendChild(btn);
+  });
+  wrap.appendChild(row);
+  if(open.reality) wrap.appendChild(el('section',{'class':'layer',id:'layer-reality'},[el('h3',{text:'Reality'}), el('p',{text:s.reality})]));
+  if(open.structure){
+    var dl = el('dl',{'class':'corr'},[el('dt',{text:'Element'}),el('dd',{text:s.element}),el('dt',{text:'Planet'}),el('dd',{text:s.planet}),el('dt',{text:'Metal'}),el('dd',{text:s.metal}),el('dt',{text:'Figure'}),el('dd',{text:s.geometry})]);
+    wrap.appendChild(el('section',{'class':'layer',id:'layer-structure'},[el('h3',{text:'Structure'}), el('p',{text:s.structure}), dl]));
+  }
+  return wrap;
+}
+
+function carry(label, text){ return text ? el('div',{'class':'carry'},[el('b',{text:label}), text]) : null; }
+
+function renderIntro(){
+  theme();
+  var ta = el('textarea',{id:'matter',rows:'5',placeholder:'A situation, a question, a pattern, a stuck place…'});
+  ta.value = state.matter;
+  var begin = el('button',{type:'button','class':'btn primary',id:'beginBtn',text:'Enter the first fire',disabled:!state.matter.trim()});
+  ta.addEventListener('input', function(){ state.matter = ta.value; save(); begin.disabled = !ta.value.trim(); });
+  begin.addEventListener('click', function(){ if(ta.value.trim()) go(STAGES[0].id); });
+  main.appendChild(el('div',{'class':'fade'},[
+    sigil('intro'),
+    el('p',{'class':'eyebrow',text:'An alchemical experience in seven stages'}),
+    el('h1',{text:'Seven Stages of Alchemy'}),
+    el('p',{'class':'lede',text:'The old alchemists worked on metal as a mirror for working on themselves. Bring one real thing into the vessel, and carry it through fire, water, air and earth until it becomes something you can act on.'}),
+    el('label',{'class':'prompt','for':'matter',text:'What are you bringing to the work?'}),
+    ta,
+    el('p',{'class':'hint',text:'This is your prima materia, the raw material. It stays on this device.'}),
+    el('div',{'class':'actions'},[begin])
+  ]));
+}
+
+function renderStage(i){
+  var s = STAGES[i];
+  theme(s.color);
+  var prev = i === 0 ? state.matter : (s.recursive ? null : state.answers[STAGES[i-1].id]);
+  var node = el('div',{'class':'fade'});
+  node.appendChild(sigil(s.geometry));
+  node.appendChild(el('p',{'class':'eyebrow',text:'Stage '+s.n+' of 7 · '+s.verb}));
+  node.appendChild(el('h2',{text:s.name}));
+  node.appendChild(el('p',{'class':'lede',text:s.lede}));
+
+  if(s.recursive){
+    var d = state.distillates, last = d.length ? d[d.length-1] : (state.answers.fermentation || '');
+    node.appendChild(el('p',{'class':'cycle',id:'cycleCount',text:'Pass '+(d.length+1)+(d.length? ' · '+d.length+' distilled so far':'')}));
+    node.appendChild(carry(d.length ? 'Last distillate' : 'What fermented', last));
+  } else {
+    node.appendChild(carry(i===0 ? 'Your raw material' : 'Carried from '+STAGES[i-1].name, prev));
+  }
+
+  var ta = el('textarea',{id:'answer',rows:'5','aria-describedby':'answerHint'});
+  var lbl = el('label',{'class':'prompt','for':'answer',text:s.prompt});
+  ta.value = s.recursive ? '' : (state.answers[s.id] || '');
+  node.appendChild(lbl); node.appendChild(ta);
+  var hint = el('p',{'class':'hint',id:'answerHint',text: s.recursive ? 'Each pass should be shorter than the last.' : ' '});
+  node.appendChild(hint);
+
+  var acts = el('div',{'class':'actions'});
+  if(i > 0) acts.appendChild(el('button',{type:'button','class':'btn',text:'Back',on:{click:function(){ go(STAGES[i-1].id); }}}));
+
+  if(s.recursive){
+    var again = el('button',{type:'button','class':'btn',id:'distillAgain',text:'Distill again',disabled:true});
+    var done = el('button',{type:'button','class':'btn primary',id:'distillDone',text: state.distillates.length ? 'It is clear. Continue' : 'Continue',disabled:!state.distillates.length});
+    var lastLen = (state.distillates.length ? state.distillates[state.distillates.length-1] : '').trim().length;
+    ta.addEventListener('input', function(){
+      var v = ta.value.trim(); again.disabled = !v; done.disabled = !(v || state.distillates.length);
+      hint.textContent = (lastLen && v.length >= lastLen) ? 'Still as long as the last pass. Try fewer words.' : 'Each pass should be shorter than the last.';
+    });
+    again.addEventListener('click', function(){ var v = ta.value.trim(); if(!v) return; state.distillates.push(v); state.answers[s.id] = v; save(); render(); document.getElementById('answer').focus(); });
+    done.addEventListener('click', function(){ var v = ta.value.trim(); if(v){ state.distillates.push(v); } state.answers[s.id] = state.distillates[state.distillates.length-1]; if(!state.answers[s.id]) return; go(STAGES[i+1].id); });
+    acts.appendChild(again); acts.appendChild(done);
+  } else {
+    var next = el('button',{type:'button','class':'btn primary',id:'nextBtn',text: i===6 ? 'Set the stone' : 'Continue to '+STAGES[i+1].name, disabled:!ta.value.trim()});
+    ta.addEventListener('input', function(){ state.answers[s.id] = ta.value; save(); next.disabled = !ta.value.trim(); renderRail(); });
+    next.addEventListener('click', function(){ if(!ta.value.trim()) return; go(i===6 ? 'apply' : STAGES[i+1].id); });
+    acts.appendChild(next);
+  }
+  node.appendChild(acts);
+  node.appendChild(layerToggles(s));
+  main.appendChild(node);
+}
+
+function summaryText(){
+  var lines = ['SEVEN STAGES OF ALCHEMY', '', 'Raw material:', state.matter.trim(), ''];
+  STAGES.forEach(function(s){ if(s.recursive){ lines.push(s.name+' ('+state.distillates.length+' passes):'); state.distillates.forEach(function(d,k){ lines.push('  '+(k+1)+'. '+d); }); } else { lines.push(s.name+':'); lines.push((state.answers[s.id]||'').trim()); } lines.push(''); });
+  lines.push('APPLY'); lines.push('Action: '+(state.answers.coagulation||'').trim()); lines.push('When: '+state.apply.when); lines.push('First small step: '+state.apply.first);
+  return lines.join('\n');
+}
+
+function renderApply(){
+  theme('#e0b54a');
+  var node = el('div',{'class':'fade'});
+  node.appendChild(sigil('heptagram'));
+  node.appendChild(el('p',{'class':'eyebrow',text:'The work, applied'}));
+  node.appendChild(el('h2',{text:'Apply'}));
+  node.appendChild(el('p',{'class':'lede',text:'Gold that stays in the vessel is only a story. Give the stone a time and a first step.'}));
+  node.appendChild(el('div',{'class':'vessel'},[
+    carry('You brought', state.matter),
+    carry('It distilled to', state.answers.distillation),
+    carry('It became', state.answers.coagulation)
+  ]));
+  var when = el('input',{id:'applyWhen',type:'text',placeholder:'Today, Sunday evening, before the 15th…'}); when.value = state.apply.when;
+  var first = el('input',{id:'applyFirst',type:'text',placeholder:'The smallest move that starts it'}); first.value = state.apply.first;
+  when.addEventListener('input', function(){ state.apply.when = when.value; save(); });
+  first.addEventListener('input', function(){ state.apply.first = first.value; save(); });
+  node.appendChild(el('div',{'class':'field'},[el('label',{'for':'applyWhen',text:'When will you do it?'}), when]));
+  node.appendChild(el('div',{'class':'field'},[el('label',{'for':'applyFirst',text:'What is the first small step?'}), first]));
+  var status = el('p',{'class':'hint',role:'status',style:'text-align:center'});
+  var copy = el('button',{type:'button','class':'btn primary',text:'Copy my work',on:{click:function(){
+    var t = summaryText();
+    if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(function(){ status.textContent='Copied.'; }, function(){ status.textContent='Copy was blocked. Use Save as text instead.'; }); }
+    else status.textContent='Copy is unavailable here. Use Save as text instead.';
+  }}});
+  var dl = el('button',{type:'button','class':'btn',text:'Save as text',on:{click:function(){
+    var url = URL.createObjectURL(new Blob([summaryText()],{type:'text/plain'}));
+    var a = el('a',{href:url,download:'seven-stages.txt'}); document.body.appendChild(a); a.click(); a.remove(); setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+  }}});
+  var back = el('button',{type:'button','class':'btn',text:'Back to Coagulation',on:{click:function(){ go('coagulation'); }}});
+  var redistill = el('button',{type:'button','class':'btn',text:'Return to Distillation',on:{click:function(){ go('distillation'); }}});
+  node.appendChild(el('div',{'class':'actions'},[copy, dl]));
+  node.appendChild(status);
+  node.appendChild(el('div',{'class':'actions'},[back, redistill]));
+  node.appendChild(el('p',{'class':'note',text:'The stages are a symbolic map drawn from the alchemical tradition, offered for reflection. They are not a diagnosis, therapy, or a substitute for professional care.'}));
+  main.appendChild(node);
+}
+
+function render(){
+  main.textContent = '';
+  var i = currentIndex();
+  if(state.view !== 'intro' && state.view !== 'apply' && (i < 0 || !reached(i))) state.view = 'intro';
+  if(state.view === 'apply' && !state.answers.coagulation) state.view = 'intro';
+  if(state.view === 'intro') renderIntro();
+  else if(state.view === 'apply') renderApply();
+  else renderStage(currentIndex());
+  renderRail();
+  document.title = (state.view === 'intro' ? '' : (state.view === 'apply' ? 'Apply · ' : STAGES[currentIndex()].name + ' · ')) + 'Seven Stages of Alchemy';
+}
+
+document.getElementById('resetBtn').addEventListener('click', function(){
+  if(state.matter && !window.confirm('Clear your work and begin again?')) return;
+  state = blank(); try{ localStorage.removeItem(KEY); }catch(e){} go('intro');
+});
+
+render();
+})();
+</script>
+</body>
+</html>
