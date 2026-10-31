@@ -87,10 +87,6 @@ dl.corr dt{color:var(--muted)} dl.corr dd{margin:0;text-transform:capitalize}
 .note{font-size:13px;color:var(--muted);text-align:center;max-width:60ch;margin:26px auto 0}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 footer{padding:16px;text-align:center;font-size:12px;color:var(--muted)}
-footer p{margin:.2em auto;max-width:62ch}
-.about{margin:10px auto 0;max-width:62ch;text-align:left}
-.about summary{cursor:pointer;text-align:center;color:var(--ink);min-height:32px;padding-top:6px}
-.about p{line-height:1.55}
 .fade{animation:fade .6s ease both}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion: reduce){
@@ -110,16 +106,7 @@ footer p{margin:.2em auto;max-width:62ch}
 </header>
 <nav class="rail" id="rail" aria-label="Stages"></nav>
 <main id="stage" tabindex="-1" aria-live="polite"></main>
-<footer>
-  <p>Symbolic and reflective. Not medical or psychological treatment. Nothing you write leaves this device.</p>
-  <details class="about">
-    <summary>About</summary>
-    <p>Alchemy has often been read as work on matter and, at the same time, as a mirror for inner transformation. These seven stages follow a widely used modern form of that reading.</p>
-    <p>The wording, figures and sound are original. Independent work, not affiliated with any person or organization. The planet and metal correspondences follow one commonly presented scheme, and sources vary.</p>
-    <p>No recordings are used. The optional drone is generated live in your browser.</p>
-    <p>v1.0.4</p>
-  </details>
-</footer>
+<footer>Symbolic and reflective. Not medical or psychological treatment. Nothing you write leaves this device.</footer>
 
 <script type="application/json" id="stages">
 [
@@ -196,7 +183,6 @@ function el(tag, attrs, kids){
   return n;
 }
 
-/* ---------- sacred geometry (inline SVG, no external assets) ---------- */
 var NS = 'http://www.w3.org/2000/svg';
 function svg(tag, a){ var n = document.createElementNS(NS, tag); for(var k in a) n.setAttribute(k, a[k]); return n; }
 function poly(nPts, r, rot, step){
@@ -226,7 +212,6 @@ function sigil(kind){
   return root;
 }
 
-/* ---------- optional sound: opt-in, user-gesture only, never autoplays ---------- */
 var audio = {ctx:null, nodes:null, on:false};
 var RATIOS = [1, 9/8, 5/4, 4/3, 3/2, 5/3, 15/8];
 function tone(idx){
@@ -251,7 +236,6 @@ soundBtn.addEventListener('click', function(){
   if(audio.on) tone(currentIndex()); else tone(-1);
 });
 
-/* ---------- navigation ---------- */
 function currentIndex(){ for(var i=0;i<STAGES.length;i++) if(STAGES[i].id === state.view) return i; return state.view === 'apply' ? 6 : -1; }
 function reached(i){ // a stage is reachable if all prior stages have answers
   for(var j=0;j<i;j++) if(!state.answers[STAGES[j].id]) return false;

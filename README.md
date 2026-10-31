@@ -1,57 +1,41 @@
 # Seven Stages of Alchemy
 
-**v1.0.4** · [Live site](https://luckygithub777.github.io/seven-stages-of-alchemy/) · [Notice](NOTICE.md) · [Security](SECURITY.md) · [Changelog](CHANGELOG.md) · MIT licensed
-
-An interactive, single-page experience that carries one real thing you're working on through seven stages of alchemical transformation:
+An interactive, single-page experience built around seven stages of alchemical transformation:
 
 **Calcination → Dissolution → Separation → Conjunction → Fermentation → Distillation → Coagulation**
 
-It's an experience you move through, not a page that explains alchemy. You bring raw material (a situation, a question, a pattern), respond to each stage, and finish on **Apply**, where the result becomes one concrete action with a time and a first step.
+Bring one real situation, question, pattern, or stuck place into the experience and carry it through each stage until it becomes something concrete enough to act on.
 
-## What's inside
+## Experience
 
-- **Seven stages**, each with its own sacred-geometry figure drawn in inline SVG: triangle, circle, divided circles, vesica, pentagon, spiral, heptagram.
-- **Recursive Distillation.** Refine your insight pass after pass. Each pass is kept, and you leave when it's clear.
-- **Reality and Structure layers.** These stay hidden until you open them. *Reality* gives a practical reading of the stage. *Structure* gives its traditional correspondences (element, planet, metal, figure).
-- **Optional sound.** A soft synthesized drone that changes with each stage. It's off by default and only starts when you turn it on, and it never autoplays. It's there for atmosphere only, with no claims about effects on the brain or health.
-- **Apply.** Copy your whole journey or save it as a text file.
-- **Local by design.** Progress is saved only in your browser's local storage. There's no network access, analytics, external fonts or remote assets, and a Content-Security-Policy enforces this.
-- **Accessible.** Keyboard navigable, visible focus states, ARIA labelling, respects `prefers-reduced-motion`, and responsive down to 320 px wide.
+- Seven guided stages with original geometric figures.
+- Recursive Distillation for repeated refinement.
+- Optional synthesized sound, off by default.
+- Reality and Structure views available on demand.
+- Progress stored only in the browser.
+- No analytics, accounts, external fonts, or remote runtime assets.
+- Keyboard navigation, reduced-motion support, and responsive layouts.
 
-## Run it
+## Run
 
-Open `index.html` in any modern browser. There's no build step and no dependencies.
+Open `index.html` in a modern browser.
 
-## Validate
-
-```bash
-python scripts/validate_site.py   # structure, stages, recursion, layers, sound, privacy, claims, release files
-sha256sum -c SHA256SUMS.txt       # file integrity
-
-# Browser UAT (Playwright, pinned in package-lock.json)
-npm ci && npx playwright install chromium
-python -m http.server 8765 &      # serve the repo root
-npm run uat                       # 1440×900, 390×844, 320×568
-```
-
-Pull requests run the static checks and the browser UAT. Every Action is pinned to an immutable commit SHA.
-
-## Deployment
-
-Every push to `main` runs `.github/workflows/pages.yml`:
-
-1. **Checks.** Static validation, checksums and browser UAT.
-2. **Deploy.** Only `index.html` and `social-preview.png` are published to GitHub Pages.
-3. **Live verify.** The live files must match the commit byte-for-byte, repository-only files must return 404, and the full browser UAT runs against the live URL.
-
-The same pipeline re-verifies the live site weekly. It requires Settings → Pages → Source to be set to **GitHub Actions**.
-
-To regenerate checksums after editing:
+## Verify
 
 ```bash
-find . -type f ! -path './.git/*' ! -path './node_modules/*' ! -name SHA256SUMS.txt | sort | xargs sha256sum > SHA256SUMS.txt
+python scripts/validate_site.py
+sha256sum -c SHA256SUMS.txt
+npm ci
+python -m http.server 8765
+npm run uat
 ```
 
-## Note
+## Security
 
-The stages are a symbolic map drawn from alchemical imagery, offered for reflection. They are not a diagnosis, therapy, or a substitute for professional care.
+See [SECURITY.md](SECURITY.md).
+
+## License
+
+MIT. See [LICENSE](LICENSE).
+
+The experience is symbolic and reflective. It is not medical or psychological treatment, diagnosis, or professional advice.
