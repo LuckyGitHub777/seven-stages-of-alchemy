@@ -1,5 +1,4 @@
 const { chromium } = require('playwright');
-// Browser UAT. Serve the repo root first, e.g.: python -m http.server 8765
 const url = process.env.SITE_URL || 'http://127.0.0.1:8765/index.html';
 const os = require('os'); const path = require('path');
 const shotDir = process.env.SHOT_DIR || path.join(os.tmpdir(), 'uat-shots'); require('fs').mkdirSync(shotDir, {recursive:true});
@@ -41,7 +40,6 @@ const sizes = [[1440,900],[390,844],[320,568]];
     await page.fill('#answer','Finish before starting.');
     await page.click('#distillAgain');
     ok((await page.locator('#cycleCount').textContent()).startsWith('Pass 3'), 'recursion: pass 3');
-    // persistence across reload mid-recursion
     await page.reload();
     ok((await page.locator('h2').textContent())==='Distillation' && (await page.locator('#cycleCount').textContent()).startsWith('Pass 3'), 'persistence: reload resumes at Distillation pass 3');
     await page.screenshot({path:`${shotDir}/distill_${w}.png`, fullPage:true});
@@ -59,22 +57,17 @@ const sizes = [[1440,900],[390,844],[320,568]];
     const [dl] = await Promise.all([page.waitForEvent('download'), page.click('text=Save as text')]);
     const p = await dl.path(); const txt = require('fs').readFileSync(p,'utf8');
     ok(txt.includes('Distillation (3 passes)') && txt.includes('Sunday 10am'), 'Save as text contains journey + apply');
-    // rail navigation back
     await page.click('nav.rail .dot >> nth=0'); ok((await page.locator('h2').textContent())==='Calcination', 'rail navigates to completed stage');
-    // sound toggle (opt-in, no errors)
     ok((await page.locator('#soundBtn').getAttribute('aria-pressed'))==='false', 'sound off by default');
     await page.click('#soundBtn'); ok((await page.locator('#soundBtn').getAttribute('aria-pressed'))==='true', 'sound toggles on by user gesture');
     await page.click('#soundBtn');
-    // reset
     await page.click('#resetBtn'); ok(await page.locator('#matter').count()===1 && (await page.inputValue('#matter'))==='', 'Begin again clears state');
     await page.screenshot({path:`${shotDir}/intro_${w}.png`, fullPage:true});
-    ok(await page.locator('details.about summary').isVisible(), 'About panel visible');
-    await page.click('details.about summary'); ok((await page.locator('details.about').textContent()).includes('not affiliated'), 'independence notice shown on open');
+    ok((await page.locator('footer').textContent()).includes('Symbolic and reflective'), 'scope notice visible');
     ok(await page.locator('link[rel=icon]').count()===1 && await page.locator('meta[property="og:image"]').count()===1, 'favicon + social metadata present');
     ok(errs.length===0, 'no console errors / CSP violations '+(errs.length?JSON.stringify(errs):''));
     await ctx.close();
   }
-  // reduced motion + keyboard
   const ctx = await browser.newContext({reducedMotion:'reduce'}); const page = await ctx.newPage(); await page.goto(url);
   const anim = await page.evaluate(()=>getComputedStyle(document.querySelector('.sigil .spin')).animationName);
   ok(anim==='none','reduced motion disables animation');
