@@ -1,6 +1,8 @@
 # Seven Stages of Alchemy
 
-An interactive, single-page experience that carries one real thing you're working on through the seven classical stages of alchemical transformation:
+**v1.0.3** · [Notice](NOTICE.md) · [Security](SECURITY.md) · [Changelog](CHANGELOG.md) · MIT licensed
+
+An interactive, single-page experience that carries one real thing you're working on through seven stages of alchemical transformation:
 
 **Calcination → Dissolution → Separation → Conjunction → Fermentation → Distillation → Coagulation**
 
@@ -23,18 +25,23 @@ Open `index.html` in any modern browser. There's no build step and no dependenci
 ## Validate
 
 ```bash
-python scripts/validate_site.py   # structure, stages, recursion, layers, sound, privacy, claims
+python scripts/validate_site.py   # structure, stages, recursion, layers, sound, privacy, claims, release files
 sha256sum -c SHA256SUMS.txt       # file integrity
+
+# Browser UAT (Playwright, pinned in package-lock.json)
+npm ci && npx playwright install chromium
+python -m http.server 8765 &      # serve the repo root
+npm run uat                       # 1440×900, 390×844, 320×568
 ```
 
-The same checks run in GitHub Actions on every push. The workflow pins both Actions to immutable commit SHAs.
+GitHub Actions runs both the static checks and the browser UAT on every push. Every Action is pinned to an immutable commit SHA.
 
 To regenerate checksums after editing:
 
 ```bash
-find . -type f ! -path './.git/*' ! -name SHA256SUMS.txt | sort | xargs sha256sum > SHA256SUMS.txt
+find . -type f ! -path './.git/*' ! -path './node_modules/*' ! -name SHA256SUMS.txt | sort | xargs sha256sum > SHA256SUMS.txt
 ```
 
 ## Note
 
-The stages are a symbolic map drawn from the alchemical tradition and are offered for reflection. They are not a diagnosis, therapy, or a substitute for professional care.
+The stages are a symbolic map drawn from alchemical imagery, offered for reflection. They are not a diagnosis, therapy, or a substitute for professional care.

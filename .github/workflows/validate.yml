@@ -26,3 +26,28 @@ jobs:
         run: python scripts/validate_site.py
       - name: Verify file checksums
         run: sha256sum -c SHA256SUMS.txt
+
+  browser-uat:
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      # actions/checkout v4.4.0, pinned to an immutable commit
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      # actions/setup-node v4.4.0, pinned to an immutable commit
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "22"
+      - name: Install pinned Playwright (lockfile)
+        run: npm ci --no-audit --no-fund
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Serve site and run browser UAT
+        env:
+          SHOT_DIR: ${{ runner.temp }}/uat-shots
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/dev/null 2>&1 &
+          for i in $(seq 1 20); do curl -fsS http://127.0.0.1:8765/index.html >/dev/null && break; sleep 0.5; done
+          npm run uat

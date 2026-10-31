@@ -1,0 +1,13 @@
+{
+  "name": "seven-stages-of-alchemy",
+  "version": "1.0.3",
+  "private": true,
+  "description": "Interactive seven-stage alchemical transformation experience.",
+  "license": "MIT",
+  "scripts": {
+    "uat": "node tests/uat.cjs"
+  },
+  "devDependencies": {
+    "playwright": "1.63.0"
+  }
+}

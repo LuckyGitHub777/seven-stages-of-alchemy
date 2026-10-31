@@ -6,6 +6,17 @@
 <meta name="color-scheme" content="dark">
 <meta name="description" content="A seven-stage alchemical transformation experience: Calcination, Dissolution, Separation, Conjunction, Fermentation, Distillation, Coagulation.">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data: blob:; media-src blob:; base-uri 'none'; form-action 'none'">
+<meta name="theme-color" content="#0c0a09">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230c0a09'/%3E%3Cpolygon points='32,6 52.3,15.8 57.4,37.8 43.3,55.4 20.7,55.4 6.6,37.8 11.7,15.8' fill='none' stroke='%23d9a441' stroke-width='3' stroke-linejoin='round'/%3E%3Ccircle cx='32' cy='33' r='6' fill='%23d9a441'/%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Seven Stages of Alchemy">
+<meta property="og:description" content="Carry one real thing through Calcination, Dissolution, Separation, Conjunction, Fermentation, Distillation and Coagulation until it becomes something you can act on.">
+<meta property="og:url" content="https://luckygithub777.github.io/seven-stages-of-alchemy/">
+<meta property="og:image" content="https://luckygithub777.github.io/seven-stages-of-alchemy/social-preview.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A gold seven-pointed star on a dark background with the title Seven Stages of Alchemy">
+<meta name="twitter:card" content="summary_large_image">
 <title>Seven Stages of Alchemy</title>
 <style>
 :root{
@@ -76,6 +87,10 @@ dl.corr dt{color:var(--muted)} dl.corr dd{margin:0;text-transform:capitalize}
 .note{font-size:13px;color:var(--muted);text-align:center;max-width:60ch;margin:26px auto 0}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 footer{padding:16px;text-align:center;font-size:12px;color:var(--muted)}
+footer p{margin:.2em auto;max-width:62ch}
+.about{margin:10px auto 0;max-width:62ch;text-align:left}
+.about summary{cursor:pointer;text-align:center;color:var(--ink);min-height:32px;padding-top:6px}
+.about p{line-height:1.55}
 .fade{animation:fade .6s ease both}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion: reduce){
@@ -95,7 +110,16 @@ footer{padding:16px;text-align:center;font-size:12px;color:var(--muted)}
 </header>
 <nav class="rail" id="rail" aria-label="Stages"></nav>
 <main id="stage" tabindex="-1" aria-live="polite"></main>
-<footer>Symbolic and reflective. Not medical or psychological treatment. Nothing you write leaves this device.</footer>
+<footer>
+  <p>Symbolic and reflective. Not medical or psychological treatment. Nothing you write leaves this device.</p>
+  <details class="about">
+    <summary>About</summary>
+    <p>Alchemy has often been read as work on matter and, at the same time, as a mirror for inner transformation. These seven stages follow a widely used modern form of that reading.</p>
+    <p>The wording, figures and sound are original. Independent work, not affiliated with any person or organization. The planet and metal correspondences follow one commonly presented scheme, and sources vary.</p>
+    <p>No recordings are used. The optional drone is generated live in your browser.</p>
+    <p>v1.0.3</p>
+  </details>
+</footer>
 
 <script type="application/json" id="stages">
 [
@@ -283,7 +307,7 @@ function renderIntro(){
     sigil('intro'),
     el('p',{'class':'eyebrow',text:'An alchemical experience in seven stages'}),
     el('h1',{text:'Seven Stages of Alchemy'}),
-    el('p',{'class':'lede',text:'The old alchemists worked on metal as a mirror for working on themselves. Bring one real thing into the vessel, and carry it through fire, water, air and earth until it becomes something you can act on.'}),
+    el('p',{'class':'lede',text:'Alchemy has often been read as work on matter and as a mirror for inner transformation. Bring one real thing into the vessel, and carry it through fire, water, air and earth until it becomes something you can act on.'}),
     el('label',{'class':'prompt','for':'matter',text:'What are you bringing to the work?'}),
     ta,
     el('p',{'class':'hint',text:'This is your prima materia, the raw material. It stays on this device.'}),
@@ -381,7 +405,7 @@ function renderApply(){
   node.appendChild(el('div',{'class':'actions'},[copy, dl]));
   node.appendChild(status);
   node.appendChild(el('div',{'class':'actions'},[back, redistill]));
-  node.appendChild(el('p',{'class':'note',text:'The stages are a symbolic map drawn from the alchemical tradition, offered for reflection. They are not a diagnosis, therapy, or a substitute for professional care.'}));
+  node.appendChild(el('p',{'class':'note',text:'The stages are a symbolic map drawn from alchemical imagery, offered for reflection. They are not a diagnosis, therapy, or a substitute for professional care.'}));
   main.appendChild(node);
 }
 

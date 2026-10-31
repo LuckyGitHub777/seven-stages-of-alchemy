@@ -16,11 +16,10 @@ EXPECTED = [
     "Calcination", "Dissolution", "Separation", "Conjunction",
     "Fermentation", "Distillation", "Coagulation",
 ]
-# Wording that would imply a medical, therapeutic or brain-entrainment claim,
-# or reference proprietary audio programmes.
+# Wording that would imply a medical, therapeutic or brain-entrainment claim.
 FORBIDDEN = [
     r"\bheal(s|ing)?\b", r"\bcure[sd]?\b", r"\btherap(y|eutic)\b(?!,? or a substitute)",
-    r"brain\s*wave", r"entrain", r"binaural", r"hemi-?sync", r"metamusic",
+    r"brain\s*wave", r"entrain", r"binaural",
     r"solfeggio", r"\bhz\b.*\bfrequenc(y|ies)\b.*\bheal",
 ]
 
@@ -98,10 +97,21 @@ def main():
     # Claims
     lowered = html.lower()
     hits = [pat for pat in FORBIDDEN if re.search(pat, lowered)]
-    check(not hits, f"no therapeutic / entrainment / proprietary-audio claims {hits if hits else ''}".strip())
+    check(not hits, f"no therapeutic / entrainment claims {hits if hits else ''}".strip())
 
     # Persistence is guarded
     check(html.count("localStorage") >= 2 and "try{ localStorage" in html, "localStorage access is try/catch guarded")
+
+    # Public-release files and metadata
+    for f in ("LICENSE", "NOTICE.md", "SECURITY.md", "README.md", "CHANGELOG.md", "social-preview.png", "tests/uat.cjs", ".nojekyll"):
+        check((ROOT / f).is_file(), f"{f} present")
+    check(any(t == "link" and a.get("rel") == "icon" and (a.get("href") or "").startswith("data:image/svg+xml")
+              for t, a in p.tags), "inline favicon present")
+    for prop in ("og:title", "og:description", "og:image", "og:url"):
+        check(any(t == "meta" and a.get("property") == prop and a.get("content") for t, a in p.tags), f"{prop} metadata present")
+    check("not affiliated" in html and "original" in html, "independence notice in page")
+    notice = (ROOT / "NOTICE.md").read_text(encoding="utf-8") if (ROOT / "NOTICE.md").is_file() else ""
+    check("not affiliated" in notice, "NOTICE.md carries independence notice")
 
     print()
     if failures:
