@@ -8,6 +8,6 @@ feb6ab178720af98dbbf0a3c24336acae82d7db87ac68ef527b3d771456469f5  ./SECURITY.md
 cf7dd23891a84c2348790d85768b8858bafa022efbb53e32d40b4a42d2fe7d13  ./index.html
 d4c1c74ecf94fbf29b50ff0eabfe444c538dbb8ff73fbf99e688612e863cae61  ./package-lock.json
 6eb94aecb6f3035cca9459aca20214f6a8c9a3a3a9973e9a895a7a285150e3e9  ./package.json
-ebcbe548527f3b231a32eda34ae4d5b85ceccb90632e6beb96142717132a4659  ./scripts/validate_site.py
+41490ae3066db033b2f73b438c30add955b056b063af6f83393d4e2f37bd4ee7  ./scripts/validate_site.py
 fe95bf896e1daa3233ce434f1f77b3b3daec7f1c7bdef53e41fcfed9d0f1cfaf  ./social-preview.png
 d17c2cd3f88be2310cae34945789fdb15be4aa3a7ca77252ce2d515406c73afb  ./tests/uat.cjs
