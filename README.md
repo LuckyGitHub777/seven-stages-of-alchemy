@@ -12,7 +12,9 @@ Bring one real situation, question, pattern, or stuck place into the experience 
 - Recursive Distillation for repeated refinement.
 - Optional synthesized sound, off by default.
 - Reality and Structure views available on demand.
-- Progress stored only in the browser.
+- Reflections remain only in this tab's memory (not in origin-wide browser storage); reload or close clears unsaved work.
+- A visit to this version removes any recoverable legacy localStorage copy, moving it into the current tab for export.
+- Use **Save as text** to keep a local copy before leaving.
 - No analytics, accounts, external fonts, or remote runtime assets.
 - Keyboard navigation, reduced-motion support, and responsive layouts.
 
