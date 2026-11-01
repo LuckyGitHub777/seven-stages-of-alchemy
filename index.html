@@ -106,7 +106,7 @@ footer{padding:16px;text-align:center;font-size:12px;color:var(--muted)}
 </header>
 <nav class="rail" id="rail" aria-label="Stages"></nav>
 <main id="stage" tabindex="-1" aria-live="polite"></main>
-<footer>Symbolic and reflective. Not medical or psychological treatment. Nothing you write leaves this device.</footer>
+<footer>Symbolic and reflective. Not medical or psychological treatment. Your work stays in this tab only, is cleared on reload or close, and is not uploaded. Save as text to keep a copy.</footer>
 
 <script type="application/json" id="stages">
 [
@@ -165,12 +165,21 @@ var rail = document.getElementById('rail');
 var soundBtn = document.getElementById('soundBtn');
 
 function blank(){ return {view:'intro', matter:'', answers:{}, distillates:[], apply:{when:'',first:''}, layers:{}}; }
+// Historical versions used origin-wide localStorage on *.github.io.
+// Recover once into this tab's memory and remove the shared copy immediately.
+// No session or local storage is used for ongoing reflection content.
 function load(){
-  try{ var s = JSON.parse(localStorage.getItem(KEY)); if(s && s.view) return Object.assign(blank(), s); }catch(e){}
-  return blank();
+  var restored = blank();
+  try {
+    var raw = localStorage.getItem(KEY);
+    if(raw){ var previous = JSON.parse(raw); if(previous && typeof previous.view === 'string') restored = Object.assign(blank(), previous); }
+  } catch(e) { /* Legacy storage may be absent or malformed. */ }
+  try { localStorage.removeItem(KEY); } catch(e) { /* Storage may be blocked. */ }
+  return restored;
 }
 var state = load();
-function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+var exported = false;
+function save(){ exported = false; }
 
 function el(tag, attrs, kids){
   var n = document.createElement(tag);
@@ -382,7 +391,7 @@ function renderApply(){
   }}});
   var dl = el('button',{type:'button','class':'btn',text:'Save as text',on:{click:function(){
     var url = URL.createObjectURL(new Blob([summaryText()],{type:'text/plain'}));
-    var a = el('a',{href:url,download:'seven-stages.txt'}); document.body.appendChild(a); a.click(); a.remove(); setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+    var a = el('a',{href:url,download:'seven-stages.txt'}); document.body.appendChild(a); a.click(); a.remove(); exported = true; setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
   }}});
   var back = el('button',{type:'button','class':'btn',text:'Back to Coagulation',on:{click:function(){ go('coagulation'); }}});
   var redistill = el('button',{type:'button','class':'btn',text:'Return to Distillation',on:{click:function(){ go('distillation'); }}});
@@ -407,7 +416,13 @@ function render(){
 
 document.getElementById('resetBtn').addEventListener('click', function(){
   if(state.matter && !window.confirm('Clear your work and begin again?')) return;
-  state = blank(); try{ localStorage.removeItem(KEY); }catch(e){} go('intro');
+  state = blank(); exported = true; try{ localStorage.removeItem(KEY); }catch(e){} go('intro');
+});
+
+window.addEventListener('beforeunload', function(event){
+  if(!state.matter.trim() || exported) return;
+  event.preventDefault();
+  event.returnValue = '';
 });
 
 render();
