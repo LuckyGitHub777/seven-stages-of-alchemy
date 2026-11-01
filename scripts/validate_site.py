@@ -89,7 +89,13 @@ def main():
     hits = [pat for pat in FORBIDDEN if re.search(pat, lowered)]
     check(not hits, f"no therapeutic / entrainment claims {hits if hits else ''}".strip())
 
-    check(html.count("localStorage") >= 2 and "try{ localStorage" in html, "localStorage access is try/catch guarded")
+    check("localStorage.setItem" not in html, "private reflection is not persisted in shared-origin localStorage")
+    check("localStorage.getItem(KEY)" in html and "localStorage.removeItem(KEY)" in html,
+          "legacy shared-origin data is migrated and removed once")
+    check("window.addEventListener('beforeunload'" in html,
+          "unsaved work is guarded against accidental reload")
+    check("Your work stays in this tab only" in html and "Save as text to keep a copy." in html,
+          "user-visible privacy and persistence limitations are clear")
 
     for f in ("LICENSE", "SECURITY.md", "README.md", "social-preview.png", "tests/uat.cjs", ".nojekyll"):
         check((ROOT / f).is_file(), f"{f} present")
